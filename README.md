@@ -55,7 +55,7 @@ Your local directory must therefore be named `gpm`, or exposed as `gpm` on `PYTH
 Recommended clone pattern:
 
 ```bash
-git clone <YOUR_PUBLIC_REPO_URL> gpm
+git clone https://github.com/maslenchenko/gpm.git
 cd gpm
 ```
 
@@ -113,6 +113,21 @@ pip install -r requirements.txt
 
 If `mamba_ssm` import fails with undefined symbols, reinstall with a wheel matching your torch ABI (`cxx11abiTRUE` or `cxx11abiFALSE`).
 
+### Path setup (recommended for commands below)
+
+Set these once per shell session:
+
+```bash
+export GPM_ROOT=/path/to/gpm
+export BORZOI_DATA=/path/to/borzoi_data/hg38
+export ECOLI_DATA=/path/to/ecoli-data
+export CKPT_DIR="$GPM_ROOT/ckpts"
+export LOG_DIR="$GPM_ROOT/logs"
+mkdir -p "$CKPT_DIR" "$LOG_DIR"
+```
+
+Then use `$BORZOI_DATA`, `$ECOLI_DATA`, `$CKPT_DIR`, and `$LOG_DIR` in commands instead of machine-specific absolute paths.
+
 ## 7) Data Requirements
 
 ### 7.1 Borzoi backend (`--data_backend borzoi`)
@@ -150,7 +165,7 @@ All commands assume:
 
 ```bash
 python -m gpm.scripts.train \
-  --data_dir /path/to/borzoi_data/hg38 \
+  --data_dir "$BORZOI_DATA" \
   --train fold0 fold1 fold2 fold3 \
   --valid fold4 \
   --test fold5 \
@@ -167,7 +182,7 @@ python -m gpm.scripts.train \
   --shuffle_buffer 4 \
   --max_epochs 10 \
   --patience 5 \
-  --save /path/to/ckpts/stripedmamba_fold0-3.pt \
+  --save "$CKPT_DIR/stripedmamba_fold0-3.pt" \
   --experiment_name stripedmamba_fold0-3
 ```
 
@@ -175,7 +190,7 @@ python -m gpm.scripts.train \
 
 ```bash
 python -m gpm.scripts.train \
-  --data_dir /path/to/borzoi_data/hg38 \
+  --data_dir "$BORZOI_DATA" \
   --train fold0 fold1 fold2 fold3 \
   --valid fold4 \
   --test fold5 \
@@ -198,7 +213,7 @@ python -m gpm.scripts.train \
   --global_clip 10 \
   --max_epochs 10 \
   --patience 5 \
-  --save /path/to/ckpts/stripedmamba_shuffle_input_interface.pt \
+  --save "$CKPT_DIR/stripedmamba_shuffle_input_interface.pt" \
   --experiment_name stripedmamba_shuffle_input_interface
 ```
 
@@ -212,8 +227,8 @@ python -m gpm.scripts.train \
   --use_input_interface \
   --input_interface_preset ecoli \
   --input_interface_args '{"num_layers":11,"num_channels_initial":128,"channels_increase_rate":1.16,"maxpooling":2,"kernel_sizes":1,"dilation":1,"norm_type":"batch","context_separate":false,"average_interfaces":false,"concat":false}' \
-  --ecoli_metadata_csv /path/to/ecoli-data/Metadata.csv \
-  --ecoli_contigs_dir /path/to/ecoli-data/contigs-ecoli \
+  --ecoli_metadata_csv "$ECOLI_DATA/Metadata.csv" \
+  --ecoli_contigs_dir "$ECOLI_DATA/contigs-ecoli" \
   --ecoli_antibiotic CIP \
   --ecoli_contig_mode shuffle \
   --ecoli_dynamic_shuffle true \
@@ -236,7 +251,7 @@ python -m gpm.scripts.train \
   --global_clip 10 \
   --max_epochs 200 \
   --patience -1 \
-  --save /path/to/ckpts/stripedmamba_isolate_ecoli_cip_shuffle.pt \
+  --save "$CKPT_DIR/stripedmamba_isolate_ecoli_cip_shuffle.pt" \
   --experiment_name stripedmamba-isolate-ecoli-cip-shuffle
 ```
 
@@ -252,25 +267,25 @@ Notes:
 
 ```bash
 python -m gpm.scripts.train \
-  --data_dir /path/to/borzoi_data/hg38 \
+  --data_dir "$BORZOI_DATA" \
   --test fold5 \
   --seq_length_crop 393216 \
   --model_name stripedmamba \
   --model_args '{"crop":3072}' \
   --batch_size 1 \
-  --load /path/to/ckpts/model.pt.best \
-  --eval /path/to/metrics.json
+  --load "$CKPT_DIR/model.pt.best" \
+  --eval "$LOG_DIR/metrics.json"
 ```
 
 ### 9.2 Single-batch inference smoke test
 
 ```bash
 python -m gpm.scripts.infer \
-  --data_dir /path/to/borzoi_data/hg38 \
+  --data_dir "$BORZOI_DATA" \
   --split fold5 \
   --model_name stripedmamba \
   --model_args '{"crop":3072}' \
-  --load /path/to/ckpts/model.pt.best
+  --load "$CKPT_DIR/model.pt.best"
 ```
 
 ## 10) Threshold Tuning for *E. coli*
@@ -291,14 +306,14 @@ Example:
 
 ```bash
 python -m gpm.scripts.tune_ecoli_thresholds \
-  --checkpoint /path/to/ckpts/stripedmamba_isolate_ecoli_cip_shuffle.pt.best \
+  --checkpoint "$CKPT_DIR/stripedmamba_isolate_ecoli_cip_shuffle.pt.best" \
   --model_name stripedmamba_isolate \
   --model_args '{"crop":0,"bn_momentum":0.1,"classifier_pool":"mean","classifier_dropout_rate":0.0,"positional_encoding":"rope","trans_pool_size":16}' \
   --use_input_interface \
   --input_interface_preset ecoli \
   --input_interface_args '{"num_layers":11,"num_channels_initial":128,"channels_increase_rate":1.16,"maxpooling":2,"kernel_sizes":1,"dilation":1,"norm_type":"batch","context_separate":false,"average_interfaces":false,"concat":false}' \
-  --ecoli_metadata_csv /path/to/ecoli-data/Metadata.csv \
-  --ecoli_contigs_dir /path/to/ecoli-data/contigs-ecoli \
+  --ecoli_metadata_csv "$ECOLI_DATA/Metadata.csv" \
+  --ecoli_contigs_dir "$ECOLI_DATA/contigs-ecoli" \
   --ecoli_antibiotic CIP \
   --ecoli_train_fraction 0.8 \
   --ecoli_valid_fraction 0.1 \
@@ -314,10 +329,16 @@ python -m gpm.scripts.tune_ecoli_thresholds \
   --threshold_min 0.0 \
   --threshold_max 1.0 \
   --threshold_points 1001 \
-  --output_json /path/to/logs/ecoli_threshold_tuning.json
+  --output_json "$LOG_DIR/ecoli_threshold_tuning.json"
 ```
 
-## 11) W&B Logging
+## 11) Pretrained *E. coli* Checkpoints
+
+Google Drive folder (contains *E. coli* best checkpoints and threshold-tuning reports):
+
+- https://drive.google.com/drive/folders/1MyxjEZWoBqLZMqB0qVSZ90-5vLcpBojc?usp=sharing
+
+## 12) W&B Logging
 
 Training path initializes Weights & Biases runs.
 
@@ -328,7 +349,7 @@ Training path initializes Weights & Biases runs.
 export WANDB_MODE=offline
 ```
 
-## 12) Troubleshooting
+## 13) Troubleshooting
 
 - `ImportError: mamba-ssm is required for BidirectionalMamba`:
   - `mamba_ssm` import failed (often ABI/CUDA mismatch), reinstall matching wheel.
