@@ -1,11 +1,13 @@
 try:
     from .dataset import SeqDataset
 except Exception as _seqdataset_import_exc:  # pragma: no cover - optional for ecoli-only usage
+    _seqdataset_import_err_text = str(_seqdataset_import_exc)
+
     class SeqDataset:  # type: ignore[no-redef]
         def __init__(self, *args, **kwargs):
             raise ImportError(
                 "SeqDataset requires optional borzoi dependencies. "
-                f"Original import error: {_seqdataset_import_exc}"
+                f"Original import error: {_seqdataset_import_err_text}"
             )
 
 from .ecoli_dataset import (
