@@ -59,8 +59,6 @@ git clone <YOUR_PUBLIC_REPO_URL> gpm
 cd gpm
 ```
 
-If you clone into `gpm-thesis`, rename it or create a symlink named `gpm`.
-
 If you run commands from inside `gpm`, use:
 
 ```bash
