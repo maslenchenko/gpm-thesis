@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd /home/ubuntu/thesis/gpm
+# Run from repository root regardless of caller cwd
+cd "$(dirname "$0")"
+
+if [[ "$(uname -s)" != "Linux" ]]; then
+  echo "This setup script currently supports Linux only."
+  exit 1
+fi
+
+if [[ "$(uname -m)" != "x86_64" ]]; then
+  echo "This setup script currently supports x86_64 only."
+  exit 1
+fi
 
 # Create virtual environment if missing
 if [ ! -d ".venv" ]; then
@@ -29,8 +40,4 @@ pip install --no-cache-dir natsort tensorflow-cpu tensorflow-datasets wandb psut
 
 # Quick environment verification
 python -c "import torch, tensorflow as tf, tensorflow_datasets as tfds, natsort; from mamba_ssm import Mamba; print('python ok'); print('torch', torch.__version__, torch.version.cuda, torch.cuda.is_available(), torch._C._GLIBCXX_USE_CXX11_ABI); print('tensorflow', tf.__version__); print('mamba_ssm OK')"
-
-# Freeze exact working environment
-pip freeze > requirements-lock.txt
-
-echo "Done. Environment is ready and pinned in requirements-lock.txt"
+echo "Done. Environment is ready."
