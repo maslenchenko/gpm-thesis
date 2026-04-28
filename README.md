@@ -332,11 +332,17 @@ python -m gpm.scripts.tune_ecoli_thresholds \
   --output_json "$LOG_DIR/ecoli_threshold_tuning.json"
 ```
 
-## 11) Pretrained *E. coli* Checkpoints
+## 11) Pretrained Checkpoints (*E. coli* + Borzoi)
 
-Google Drive folder (contains *E. coli* best checkpoints and threshold-tuning reports):
+Google Drive folder (contains *E. coli* and Borzoi experiment checkpoints, plus threshold-tuning reports):
 
 - https://drive.google.com/drive/folders/1MyxjEZWoBqLZMqB0qVSZ90-5vLcpBojc?usp=sharing
+
+Included Borzoi checkpoints cover:
+
+- baseline StripedMamba (no shuffle),
+- StripedMamba + shuffle,
+- StripedMamba + shuffle + input interface.
 
 ## 12) W&B Logging
 
