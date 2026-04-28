@@ -338,11 +338,18 @@ Google Drive folder (contains *E. coli* and Borzoi experiment checkpoints, plus 
 
 - https://drive.google.com/drive/folders/1MyxjEZWoBqLZMqB0qVSZ90-5vLcpBojc?usp=sharing
 
-Included Borzoi checkpoints cover:
+Checkpoints  and experiments:
 
-- baseline StripedMamba (no shuffle),
-- StripedMamba + shuffle,
-- StripedMamba + shuffle + input interface.
+- Experiment 1a (Borzoi baseline, no shuffle): `stripedmamba_fold0-3_v2.pt`
+- Experiment 1b (Borzoi + chunk shuffling): `stripedmamba_fold0-3__shuffle_v1.pt`
+- Experiment 1c (Borzoi + chunk shuffling + input interface): `stripedmamba_fold0-3_shuffle_input_interface_v3.pt`
+- Experiment 2a (*E. coli* CIP, concat/no contig shuffling): `stripedmamba_isolate_ecoli_cip_concat_v1.pt`
+- Experiment 2b (*E. coli* CIP, dynamic contig-order shuffling): `stripedmamba_isolate_ecoli_cip_shuffle_v1.pt`
+
+Threshold tuning reports:
+
+- Experiment 2a report: `ecoli_cip_concat_v1_threshold_tuning.json`
+- Experiment 2b report: `ecoli_cip_shuffle_v1_threshold_tuning.json`
 
 ## 12) W&B Logging
 
